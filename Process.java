@@ -45,6 +45,7 @@ public class Process implements Constants
 
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
+    private long creationTime ;
 
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
@@ -62,6 +63,7 @@ public class Process implements Constants
         timeToNextIoOperation = getTimeToNextIoOperation();
 		// The first and latest event involving this process is its creation
 		timeOfLastEvent = creationTime;
+        this.creationTime = creationTime;
 		// Assign a process ID
 		processId = nextProcessId++;
 		// Assign a pseudo-random color used by the GUI
@@ -125,10 +127,17 @@ public class Process implements Constants
 	 * leaves the system.
      * @param statistics	The Statistics object to be updated.
      */
-	public void updateStatistics(Statistics statistics) {
-		statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
-		statistics.nofCompletedProcesses++;
-	}
+    public void updateStatistics(Statistics statistics, long clock) {
+        statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
+        statistics.totalTimeWaitingForCPU += timeSpentInReadyQueue;
+        statistics.totalTimeInCPU += timeSpentInCpu;
+        statistics.totalTimeWaitingForIO += timeSpentWaitingForIo;
+        statistics.totalTimeInIO += timeSpentInIo;
+
+        statistics.processPlacedInCPUQueue += nofTimesInReadyQueue;
+        statistics.processPlacedInIOQueue += nofTimesInIoQueue;
+        statistics.totalTimeInSystem += clock - this.creationTime;
+    }
 
 	public long getremainingCpuTime(){
 		return cpuTimeNeeded;
@@ -152,6 +161,37 @@ public class Process implements Constants
     public void leftIoQueue(long clock){
         timeSpentWaitingForIo += clock-timeOfLastEvent ;
         timeOfLastEvent = clock ;
+    }
+
+    public void enteredIO(long clock) {
+        this.timeSpentWaitingForIo += clock - this.timeOfLastEvent;
+        timeOfLastEvent=clock;
+    }
+    /**
+     * Event for of how many MS spent in IO, and generating a new random time to next IO operation
+     * @param clock Current time
+     */
+    public void leftIO(long clock) {
+        // We must schedule a new IO
+        this.timeToNextIoOperation = 2*(long) (Math.random() * avgIoInterval);
+        this.timeSpentInIo +=clock-timeOfLastEvent ;
+        timeOfLastEvent=clock;
+    }
+
+
+    public void leftCPU(long clock) {
+        this.cpuTimeNeeded -= clock-timeOfLastEvent;
+        this.timeToNextIoOperation -= clock - this.timeOfLastEvent;
+        this.timeSpentInCpu += clock - this.timeOfLastEvent;
+        timeOfLastEvent=clock;
+
+    }
+
+    public void enteredCPU(long clock) {
+
+        this.timeSpentInReadyQueue += clock - this.timeOfLastEvent;
+        timeOfLastEvent = clock;
+
     }
 
 	// Add more methods as needed

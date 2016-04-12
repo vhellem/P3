@@ -37,15 +37,43 @@ public class IO {
 
     public Process IO_Completed(long clock) {
         Process finishedIoProcess = this.activeProcess;
-        this.activeProcess = null;
 
-        if (this.IOQueue.getQueueLength() > 0) {
-
-                this.activeProcess = (Process)this.IOQueue.removeNext();
+        if(activeProcess != null) {
+            // Update statistics
+            activeProcess.leftIO(clock);
+            statistics.ioOperations++;
 
         }
-        performIO(clock);
-        this.statistics.nofProcessIO++;
+        pop();
+        if(activeProcess != null) {
+            // If next in line, schedule END_IO event.
+            activeProcess.enteredIO(clock);
+            eventqueue.insertEvent(new Event(Constants.END_IO, clock+avgIOTime));
+        }
         return finishedIoProcess;
+    }
+
+    public void pop() {
+        if(IOQueue.isEmpty()) {
+            this.activeProcess = null;
+        } else {
+            this.activeProcess = (Process)IOQueue.removeNext();
+        }
+        gui.setIoActive(this.activeProcess);
+    }
+
+    public boolean isIdle(){
+        return this.activeProcess==null;
+    }
+
+    public Process getActiveProcess(){
+        return activeProcess ;
+    }
+
+    public void timePassed(long timePassed) {
+        statistics.ioQueueLengthTime += IOQueue.getQueueLength()*timePassed;
+        if (IOQueue.getQueueLength() > statistics.ioQueueLargestLength) {
+            statistics.ioQueueLargestLength = IOQueue.getQueueLength();
+        }
     }
 }

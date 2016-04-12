@@ -45,14 +45,14 @@ public class SimulationGui extends JFrame implements Constants, ActionListener, 
 		cpuQueue = new Queue("CPU queue", 10, WEST);
 		ioQueue = new Queue("I/O queue", 10, EAST);
 		timeElapsed = 0;
-
+		simulator = new Simulator(memoryQueue, cpuQueue, ioQueue, memorySize, maxCpuTime, avgIoTime,
+				simulationLength, avgArrivalInterval, this);
 		placeComponents();
 		setSize(500, 500);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		simulator = new Simulator(memoryQueue, cpuQueue, ioQueue, memorySize, maxCpuTime, avgIoTime,
-				simulationLength, avgArrivalInterval, this);
+
 	}
 
 	/**

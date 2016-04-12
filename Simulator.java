@@ -20,6 +20,7 @@ public class Simulator implements Constants
 	/** The average length between process arrivals */
 	private long avgArrivalInterval;
 	private long avgIoTime;
+
     private CPU cpu ;
     private IO io;
 
@@ -75,6 +76,8 @@ public class Simulator implements Constants
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
+            cpu.timePassed(timeDifference);
+            io.timePassed(timeDifference);
 			// Deal with the event
 			if (clock < simulationLength) {
 				processEvent(event);
@@ -159,14 +162,22 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
-        cpu.switchProcess(clock);
+
+        Process prev = cpu.switchProcess(clock);
+        statistics.forcedSwitched++;
+        cpu.insertProcess(prev, clock);
+
 	}
 
 	/**
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		memory.processCompleted(cpu.getActiveProcess());
+		Process prev = cpu.switchProcess(clock);
+        memory.processCompleted(prev);
+        statistics.nofCompletedProcesses++;
+        prev.updateStatistics(statistics);
+
 	}
 
 	/**
@@ -174,18 +185,27 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-        Process p = cpu.getActiveProcess();
-        io.insertProcess(p,clock);
-	}
+        io.insertProcess(cpu.switchProcess(clock), clock);
+        if(io.isIdle()) {
+            // If IO is idle, start the IO operation right away
+            endIoOperation();
+	}}
 
 	/**
 	 * Processes an event signifying that the process currently doing I/O
 	 * is done with its I/O operation.
 	 */
 	private void endIoOperation() {
-        Process p = io.IO_Completed(clock);
-        cpu.insertProcess(p, clock);
 
+        Process prev = io.IO_Completed(clock);
+        if(prev != null) {
+
+            cpu.insertProcess(prev, clock);
+            if(cpu.isIdle()) {
+                // If CPU is idle, switch process right away
+                switchProcess();
+            }
+        }
 	}
 
 	/**
@@ -214,7 +234,7 @@ public class Simulator implements Constants
 		System.out.println("Please input system parameters: ");
 
 		System.out.print("Memory size (KB): ");
-		long memorySize = readLong(reader);
+		/*long memorySize = readLong(reader);
 		while(memorySize < 400) {
 			System.out.println("Memory size must be at least 400 KB. Specify memory size (KB): ");
 			memorySize = readLong(reader);
@@ -234,7 +254,13 @@ public class Simulator implements Constants
 		}
 
 		System.out.print("Average time between process arrivals (ms): ");
-		long avgArrivalInterval = readLong(reader);
+		long avgArrivalInterval = readLong(reader);*/
+
+        long memorySize = 2048;
+        long maxCpuTime = 500;
+        long avgIoTime = 225;
+        long simulationLength = 250000;
+        long avgArrivalInterval = 5000;
 
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
 	}
