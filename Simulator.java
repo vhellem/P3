@@ -71,6 +71,7 @@ public class Simulator implements Constants
 			Event event = eventQueue.getNextEvent();
 			// Find out how much time that passed...
 			long timeDifference = event.getTime()-clock;
+
 			// ...and update the clock.
 			clock = event.getTime();
 			// Let the memory unit and the GUI know that time has passed
@@ -147,11 +148,10 @@ public class Simulator implements Constants
 
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
-			// Try to use the freed memory:
-			flushMemoryQueue();
-			// Update statistics
-			p.updateStatistics(statistics);
+            if (cpu.isIdle()) {
+                cpu.switchProcess(clock);
+            }
+
 
 			// Check for more free memory
 			p = memory.checkMemory(clock);
@@ -164,8 +164,10 @@ public class Simulator implements Constants
 	private void switchProcess() {
 
         Process prev = cpu.switchProcess(clock);
+        if(prev!=null){
         statistics.forcedSwitched++;
-        cpu.insertProcess(prev, clock);
+
+        cpu.insertProcess(prev, clock);}
 
 	}
 
@@ -176,7 +178,7 @@ public class Simulator implements Constants
 		Process prev = cpu.switchProcess(clock);
         memory.processCompleted(prev);
         statistics.nofCompletedProcesses++;
-        prev.updateStatistics(statistics);
+        prev.updateStatistics(statistics, clock);
 
 	}
 

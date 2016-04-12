@@ -24,11 +24,8 @@ public class CPU {
 
     public void insertProcess(Process process, long clock) {
         queue.insert(process);
-        this.statistics.cpuQueueInserts++;
-        if (activeProcess==null) {
-            this.activeProcess = (Process) queue.removeNext();
-            process(clock);
-        }
+        this.statistics.processPlacedInCPUQueue++;
+        process.enterCPUQueue(clock);
 
     }
 
@@ -38,16 +35,16 @@ public class CPU {
             activeProcess.enteredCPU(clock);
             gui.setCpuActive(activeProcess);
             if (activeProcess.getremainingCpuTime() <= activeProcess.getTimeToNextIoOperation()) {
-                activeProcess.setCpuTimeSpent(activeProcess.getremainingCpuTime());
+
                 eventQueue.insertEvent(new Event(Constants.END_PROCESS, clock + activeProcess.getremainingCpuTime()));
 
+
             } else if (activeProcess.getTimeToNextIoOperation() <= maxCPUtime) {
-                activeProcess.setCpuTimeSpent(activeProcess.getTimeToNextIoOperation());
+
                 eventQueue.insertEvent(new Event(Constants.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation()));
 
             } else {
-                activeProcess.setCpuTimeSpent(maxCPUtime);
-                activeProcess.updateTimeToIo(maxCPUtime);
+
                 statistics.forcedSwitched++;
 
                 eventQueue.insertEvent(new Event(Constants.SWITCH_PROCESS, clock + maxCPUtime));
@@ -55,7 +52,7 @@ public class CPU {
 
         }
     }
-
+    //Called each time a process leaves the CPU
     public Process switchProcess(long clock) {
         Process prev = activeProcess;
         if (prev!=null){
@@ -104,13 +101,5 @@ public class CPU {
 
     }
 
-
-    public Process getRunning(long clock) {
-        if (activeProcess!= null){
-            activeProcess.leftCpuQueue(clock);
-
-        }
-        return activeProcess;
-    }
 
 }

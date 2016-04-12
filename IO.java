@@ -19,10 +19,8 @@ public class IO {
 
     public void insertProcess(Process process, long clock){
         IOQueue.insert(process);
-        if(IOQueue.getQueueLength()==1){
-            this.activeProcess = (Process) IOQueue.removeNext() ;
-            performIO(clock);
-        }
+        process.enterIOQueue(clock);
+        statistics.processPlacedInIOQueue++;
     }
 
     public void performIO(long clock) {

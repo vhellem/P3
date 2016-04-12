@@ -133,19 +133,13 @@ public class Process implements Constants
         statistics.totalTimeInCPU += timeSpentInCpu;
         statistics.totalTimeWaitingForIO += timeSpentWaitingForIo;
         statistics.totalTimeInIO += timeSpentInIo;
-
-        statistics.processPlacedInCPUQueue += nofTimesInReadyQueue;
-        statistics.processPlacedInIOQueue += nofTimesInIoQueue;
         statistics.totalTimeInSystem += clock - this.creationTime;
     }
 
 	public long getremainingCpuTime(){
 		return cpuTimeNeeded;
 	}
-	public void inCPU(long time){
-		cpuTimeNeeded -= time ;
 
-	}
     public void setCpuTimeSpent(long time){
         timeSpentInCpu+= time ;
     }
@@ -192,6 +186,16 @@ public class Process implements Constants
         this.timeSpentInReadyQueue += clock - this.timeOfLastEvent;
         timeOfLastEvent = clock;
 
+    }
+    public void enterCPUQueue(long clock) {
+
+        ++this.nofTimesInReadyQueue;
+        timeOfLastEvent=clock;
+    }
+
+    public void enterIOQueue(long clock) {
+
+        this.timeOfLastEvent = clock;
     }
 
 	// Add more methods as needed
