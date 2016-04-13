@@ -5,20 +5,20 @@
  */
 public class Statistics
 {
-	/** The number of processes that have exited the system */
-	public long nofCompletedProcesses = 0;
-	/** The number of processes that have entered the system */
-	public long nofCreatedProcesses = 0;
-	/** The total time that all completed processes have spent waiting for memory */
-	public long totalTimeSpentWaitingForMemory = 0;
-	/** The time-weighted length of the memory queue, divide this number by the total time to get average queue length */
-	public long memoryQueueLengthTime = 0;
-	/** The largest memory queue length that has occured */
-	public long memoryQueueLargestLength = 0;
-	public long nofProcessIO = 0 ;
-	public long avgCpuQueue = 0 ;
-	public long largestCpuQueue = 0 ;
-	public long cpuQueueInserts = 0 ;
+    /** The number of processes that have exited the system */
+    public long nofCompletedProcesses = 0;
+    /** The number of processes that have entered the system */
+    public long nofCreatedProcesses = 0;
+    /** The total time that all completed processes have spent waiting for memory */
+    public long totalTimeSpentWaitingForMemory = 0;
+    /** The time-weighted length of the memory queue, divide this number by the total time to get average queue length */
+    public long memoryQueueLengthTime = 0;
+    /** The largest memory queue length that has occured */
+    public long memoryQueueLargestLength = 0;
+    public long nofProcessIO = 0 ;
+    public long avgCpuQueue = 0 ;
+    public long largestCpuQueue = 0 ;
+    public long cpuQueueInserts = 0 ;
     public long forcedSwitched  = 0 ;
     public long ioOperations = 0 ;
     public long totalCpuIdleTime = 0 ;
@@ -33,11 +33,11 @@ public class Statistics
     public long processPlacedInIOQueue = 0 ;
     public long totalTimeInSystem = 0 ;
     
-	/**
-	 * Prints out a report summarizing all collected data about the simulation.
-	 * @param simulationLength	The number of milliseconds that the simulation covered.
-	 */
-	public void printReport(long simulationLength) {
+    /**
+     * Prints out a report summarizing all collected data about the simulation.
+     * @param simulationLength  The number of milliseconds that the simulation covered.
+     */
+    public void printReport(long simulationLength) {
         double avgThroughput = 1000.0*nofCompletedProcesses/simulationLength;
         double cpuProcessingFraction = 100.0*totalCpuProcessingTime/simulationLength;
         double cpuIdleFraction = 100.0*totalCpuIdleTime/simulationLength;
@@ -51,9 +51,9 @@ public class Statistics
         System.out.println("Number of processed I/O operations:                           "+ioOperations);
         System.out.println("Average throughput (processes per second):                    "+avgThroughput);
         System.out.println();
-        System.out.println("Total CPU time spent processing:                              "+totalCpuProcessingTime);
+        System.out.println("Total CPU time spent processing:                              "+totalCpuProcessingTime+ " ms");
         System.out.println("Fraction of CPU time spent processing:                        "+cpuProcessingFraction + "%");
-        System.out.println("Total CPU time spent waiting:                                 "+totalCpuIdleTime);
+        System.out.println("Total CPU time spent waiting:                                 "+totalCpuIdleTime + " ms");
         System.out.println("Fraction of CPU time spent waiting:                           "+cpuIdleFraction + "%");
         System.out.println();
         System.out.println("Largest occuring memory queue length:                         "+memoryQueueLargestLength);
@@ -78,4 +78,4 @@ public class Statistics
             System.out.println("Average time spent in I/O per process:                        " + this.totalTimeInIO/this.nofCompletedProcesses+" ms");
         }
     }
-	}
+    }

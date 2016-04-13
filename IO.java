@@ -23,15 +23,6 @@ public class IO {
         statistics.processPlacedInIOQueue++;
     }
 
-    public void performIO(long clock) {
-        gui.setIoActive(activeProcess);
-        if (this.activeProcess != null) {
-            this.gui.setIoActive(activeProcess);
-            this.activeProcess.leftIoQueue(clock);
-            this.eventqueue.insertEvent(new Event(Constants.END_IO, clock + avgIOTime));
-        }
-    }
-
 
     public Process IO_Completed(long clock) {
         Process finishedIoProcess = this.activeProcess;
