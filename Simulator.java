@@ -259,10 +259,10 @@ public class Simulator implements Constants
 		long avgArrivalInterval = readLong(reader);*/
 
         long memorySize = 2048;
-        long maxCpuTime = 500;
-        long avgIoTime = 225;
+        long maxCpuTime = 750;
+        long avgIoTime = 400;
         long simulationLength = 250000;
-        long avgArrivalInterval = 5000;
+        long avgArrivalInterval = 1000;
 
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
 	}

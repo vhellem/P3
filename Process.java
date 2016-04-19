@@ -60,7 +60,7 @@ public class Process implements Constants
 		cpuTimeNeeded = 100 + (long)(Math.random()*9900);
 		// Average interval between I/O requests varies from 1% to 25% of CPU time needed
 		avgIoInterval = (long)(cpuTimeNeeded*0.01 + (Math.random()*cpuTimeNeeded*0.24));
-        timeToNextIoOperation = getTimeToNextIoOperation();
+        calculateNextIOTime();
 		// The first and latest event involving this process is its creation
 		timeOfLastEvent = creationTime;
         this.creationTime = creationTime;
@@ -102,16 +102,14 @@ public class Process implements Constants
     }
 
     public void calculateNextIOTime(){
-        //this.timeToNextIoOperation = (long) ((Math.random() * (1.5*avgIoInterval - 0.5*avgIoInterval)) + 0.5*avgIoInterval);
-        this.timeToNextIoOperation=avgIoInterval;
+        this.timeToNextIoOperation = (long) ((Math.random() * (1.5*avgIoInterval - 0.5*avgIoInterval)) + 0.5*avgIoInterval);
+
     }
 
     public long getTimeToNextIoOperation(){
         return timeToNextIoOperation;
 }
-    public void updateTimeToIo(long time){
-        this.timeToNextIoOperation-=time;
-    }
+
 
     /**
 	 * Returns the amount of memory needed by this process.
@@ -140,12 +138,8 @@ public class Process implements Constants
 		return cpuTimeNeeded;
 	}
 
-    public void setCpuTimeSpent(long time){
-        timeSpentInCpu+= time ;
-    }
-	public long getAvgIoInterval(){
-		return avgIoInterval;
-	}
+
+
 
     public void enteredIO(long clock) {
         this.timeSpentWaitingForIo += clock - this.timeOfLastEvent;

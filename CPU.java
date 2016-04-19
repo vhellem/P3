@@ -34,7 +34,7 @@ public class CPU {
         if (activeProcess != null) {
             activeProcess.enteredCPU(clock);
             gui.setCpuActive(activeProcess);
-            if (activeProcess.getremainingCpuTime() <= activeProcess.getTimeToNextIoOperation()) {
+            if (activeProcess.getremainingCpuTime() <= activeProcess.getTimeToNextIoOperation() && activeProcess.getremainingCpuTime() <= maxCPUtime) {
 
                 eventQueue.insertEvent(new Event(Constants.END_PROCESS, clock + activeProcess.getremainingCpuTime()));
 
