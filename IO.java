@@ -37,7 +37,7 @@ public class IO {
         if(activeProcess != null) {
             // If next in line, schedule END_IO event.
             activeProcess.enteredIO(clock);
-            eventqueue.insertEvent(new Event(Constants.END_IO, clock+avgIOTime));
+            eventqueue.insertEvent(new Event(Constants.END_IO, clock+(int)(Math.random() * (1.2*avgIOTime - 0.8*avgIOTime) + 0.8*avgIOTime)));
         }
         return finishedIoProcess;
     }
@@ -55,9 +55,6 @@ public class IO {
         return this.activeProcess==null;
     }
 
-    public Process getActiveProcess(){
-        return activeProcess ;
-    }
 
     public void timePassed(long timePassed) {
         statistics.ioQueueLengthTime += IOQueue.getQueueLength()*timePassed;

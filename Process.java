@@ -102,7 +102,7 @@ public class Process implements Constants
     }
 
     public void calculateNextIOTime(){
-        this.timeToNextIoOperation = (long) ((Math.random() * (1.5*avgIoInterval - 0.5*avgIoInterval)) + 0.5*avgIoInterval);
+        this.timeToNextIoOperation = (long) ((Math.random() * (1.2*avgIoInterval - 0.8*avgIoInterval)) + 0.8*avgIoInterval);
 
     }
 
@@ -151,7 +151,7 @@ public class Process implements Constants
      */
     public void leftIO(long clock) {
         // We must schedule a new IO
-        this.timeToNextIoOperation = 2*(long) (Math.random() * avgIoInterval);
+        calculateNextIOTime();
         this.timeSpentInIo +=clock-timeOfLastEvent ;
         timeOfLastEvent=clock;
     }
